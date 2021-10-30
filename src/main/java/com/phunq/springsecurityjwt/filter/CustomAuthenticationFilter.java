@@ -8,9 +8,10 @@ import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,16 +22,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @since 10/29/2021
  */
 @Slf4j
+@AllArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private final AuthenticationManager authenticationManager;
-  private final Long TOKEN_TIME = 10 * 60 * 1000L;
-  private final Long REFRESH_TOKEN_TIME = 30 * 60 * 1000L;
-
-  public CustomAuthenticationFilter(
-      AuthenticationManager authenticationManager) {
-    this.authenticationManager = authenticationManager;
-  }
+  private final AuthenticationProvider authenticationProvider;
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request,
@@ -40,7 +35,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     log.info("Username: {}, password: {}", username, password);
     UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(username, password);
-    return authenticationManager.authenticate(authenticationToken);
+    return authenticationProvider.authenticate(authenticationToken);
   }
 
   @Override
